@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: my-frist-argocd-app
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: 'https://kubernetes.default.svc'
+            namespace: 'team-a'
+            name: 'team-a-app'
+          - cluster: 'https://kubernetes.default.svc'
+            namespace: 'team-b'
+            name: 'team-b-app'
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/example-org/example-apps.git'
+        targetRevision: HEAD
+        path: 'manifests'
+      destination:
+        server: '{{cluster}}'
+        namespace: '{{namespace}}'
